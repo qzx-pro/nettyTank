@@ -11,12 +11,12 @@ import java.awt.event.WindowEvent;
  * @version: 1.0
  */
 public class ServerFrame extends Frame {
-    private static final com.qzx.netty.test09.ServerFrame INSTANCE = new com.qzx.netty.test09.ServerFrame();
+    private static final ServerFrame INSTANCE = new ServerFrame();
     TextArea taLeft = new TextArea();
     TextArea taRight = new TextArea();
-    com.qzx.netty.test09.Server server = new com.qzx.netty.test09.Server();//初次加载就启动服务器
+    Server server = new Server();//初次加载就启动服务器
 
-    public static com.qzx.netty.test09.ServerFrame getInstance(){
+    public static ServerFrame getInstance(){
         return INSTANCE;
     }
 
@@ -53,7 +53,7 @@ public class ServerFrame extends Frame {
     }
 
     public static void main(String[] args) {
-        com.qzx.netty.test09.ServerFrame serverFrame = com.qzx.netty.test09.ServerFrame.getInstance();
+        ServerFrame serverFrame = ServerFrame.getInstance();
         serverFrame.server.start();
     }
 }

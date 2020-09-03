@@ -3,20 +3,22 @@ package com.qzx.frame;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.UUID;
 
 public class Tank {
-    private int x,y;//初始位置
-    private Dir dir ;//坦克的初始方向
-    private static final int SPEED = 5;//坦克移动的速度
-    private boolean moving = true;//标识坦克是否移动,用来实现坦克静止,初始状态没有移动
-    private TankFrame tf;
+    public int x,y;//初始位置
+    public Dir dir ;//坦克的初始方向
+    public static final int SPEED = 5;//坦克移动的速度
+    public boolean moving = false;//标识坦克是否移动,用来实现坦克静止,初始状态没有移动
+    public TankFrame tf;
     static final int TANK_WIDTH = ResourceManager.tankD.getWidth();//坦克宽度
     static final int TANK_HEIGHT = ResourceManager.tankD.getHeight();//坦克高度
-    boolean isAlive = true;//坦克是否消失(遭到敌方攻击时消失)
-    Group group;//当前坦克的敌友标识
+    public boolean isAlive = true;//坦克是否消失(遭到敌方攻击时消失)
+    public Group group;//当前坦克的敌友标识
     Random random = new Random();//让坦克随机发射子弹
     boolean init = true;//是否是初始状态
     Rectangle recTank = null;//坦克的所处位置的矩形，用来做碰撞检测
+    public UUID id = UUID.randomUUID(); // 坦克的唯一标识
 
     public boolean isMoving() {
         return moving;
@@ -49,6 +51,9 @@ public class Tank {
         this.tf = tf;
         this.group = group;
         recTank = new Rectangle(x,y,TANK_WIDTH,TANK_HEIGHT);
+    }
+
+    public Tank() {
     }
 
     public Dir getDir() {

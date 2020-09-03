@@ -25,15 +25,15 @@ public class Server {
         try {
             ChannelFuture future = bootstrap.group(bossGroup,workerGroup)// 指定线程池
                     .channel(NioServerSocketChannel.class)
-                    .handler(new com.qzx.netty.test09.SimpleServerHandler()) // 服务器启动的流程
+                    .handler(new SimpleServerHandler()) // 服务器启动的流程
                     // 这里指定的handler是child也就是workerGroup的线程进行处理,在Channel初始化完毕后执行
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             // 初始化Channel后就可以获取客户端发送的数据了
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new TankMsgDecoder())    // 添加解码器
-                                    .addLast(new com.qzx.netty.test09.ServerReadHandler());
+                            pipeline.addLast(new TankJoinMsgDecoder())    // 添加解码器
+                                    .addLast(new ServerReadHandler());
                         }
                     })
                     .bind(8888)
@@ -46,21 +46,21 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        new com.qzx.netty.test09.Server().start();
+        new Server().start();
     }
 }
 
 class ServerReadHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        com.qzx.netty.test09.Server.clients.add(ctx.channel());// 将初始化的通道放在通道组里面
+        Server.clients.add(ctx.channel());// 将初始化的通道放在通道组里面
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 现在接受的msg就是TankMsg类型的数据
-        TankMsg tankMsg = (TankMsg) msg;
-        ServerFrame.getInstance().updateClientMsg(tankMsg.toString());
+        TankJoinMsg tankJoinMsg = (TankJoinMsg) msg;
+        ServerFrame.getInstance().updateClientMsg(tankJoinMsg.toString());
         ReferenceCountUtil.release(msg);
     }
 
@@ -68,7 +68,7 @@ class ServerReadHandler extends ChannelInboundHandlerAdapter{
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         // 处理异常，同时关闭上下文，这样客户端那边就会关闭Future
         cause.printStackTrace();
-        com.qzx.netty.test09.Server.clients.remove(ctx.channel());
+        Server.clients.remove(ctx.channel());
         ctx.close();
     }
 }

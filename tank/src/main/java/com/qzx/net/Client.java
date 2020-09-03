@@ -68,7 +68,7 @@ class InitChannelHandler extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel channel) throws Exception {
         // Channel进行初始化完毕后就进行后续的数据处理操作
         ChannelPipeline pipeline = channel.pipeline();
-        pipeline.addLast(new TankMsgEncoder())   // 添加编码器
+        pipeline.addLast(new TankJoinMsgEncoder())   // 添加编码器
                 .addLast(new ClientReadHandler());
     }
 
@@ -79,6 +79,6 @@ class ClientReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // 通道可用的时候就写一个TankMsg的消息给服务器
-        ctx.writeAndFlush(new TankMsg(6,8));
+//        ctx.writeAndFlush(new TankJoinMsg(6,8));
     }
 }

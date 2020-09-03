@@ -18,7 +18,7 @@ public class TankFrame extends Frame{
     static final int GAME_WIDTH = 1000,GAME_HEIGHT = 800;
     Tank tank = new Tank(200,400,Dir.UP,this,Group.ALLY);//我方坦克
     List<Bullet> bullets = new ArrayList<>();//打出的子弹集合
-    List<Tank> enemies = new ArrayList<>();//敌人坦克集合
+//    List<Tank> enemies = new ArrayList<>();//敌人坦克集合
     List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
 
     public TankFrame() {
@@ -58,7 +58,7 @@ public class TankFrame extends Frame{
         Color c = g.getColor();
         g.setColor(Color.WHITE);
         g.drawString("子弹数量:"+bullets.size(),10,60);
-        g.drawString("敌方坦克数量:"+enemies.size(),10,80);
+//        g.drawString("敌方坦克数量:"+enemies.size(),10,80);
         g.drawString("坦克爆炸数量:"+explodes.size(),10,100);
         g.setColor(c);
         //画出我方坦克
@@ -72,15 +72,15 @@ public class TankFrame extends Frame{
                 bullets.remove(bullet);
             }
         }
-        //画出敌方坦克
-        for (int i = 0; i < enemies.size(); i++) {
-            Tank enemy = enemies.get(i);
-            enemy.paint(g);
-            if (!enemy.isAlive){
-                //坦克遭到攻击，移除坦克
-                enemies.remove(enemy);
-            }
-        }
+//        //画出敌方坦克
+//        for (int i = 0; i < enemies.size(); i++) {
+//            Tank enemy = enemies.get(i);
+//            enemy.paint(g);
+//            if (!enemy.isAlive){
+//                //坦克遭到攻击，移除坦克
+//                enemies.remove(enemy);
+//            }
+//        }
         //画出坦克爆炸效果
         for (int i = 0; i < explodes.size(); i++) {
             Explode explode = explodes.get(i);
@@ -89,14 +89,14 @@ public class TankFrame extends Frame{
                 explodes.remove(explode);
             }
         }
-        //碰撞检测
-        for (int i = 0; i < bullets.size(); i++) {
-            Bullet bullet = bullets.get(i);
-            for (int j = 0; j < enemies.size(); j++) {
-                //子弹和敌方坦克发生碰撞
-                bullet.collideWith(enemies.get(j));
-            }
-        }
+//        //碰撞检测
+//        for (int i = 0; i < bullets.size(); i++) {
+//            Bullet bullet = bullets.get(i);
+//            for (int j = 0; j < enemies.size(); j++) {
+//                //子弹和敌方坦克发生碰撞
+//                bullet.collideWith(enemies.get(j));
+//            }
+//        }
     }
 
     class MyKey extends KeyAdapter {
