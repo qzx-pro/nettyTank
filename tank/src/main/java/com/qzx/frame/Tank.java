@@ -1,5 +1,7 @@
 package com.qzx.frame;
 
+import com.qzx.net.TankJoinMsg;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -19,6 +21,15 @@ public class Tank {
     boolean init = true;//是否是初始状态
     Rectangle recTank = null;//坦克的所处位置的矩形，用来做碰撞检测
     public UUID id = UUID.randomUUID(); // 坦克的唯一标识
+
+    public Tank(TankJoinMsg tankJoinMsg) {
+        this.x = tankJoinMsg.x;
+        this.y = tankJoinMsg.y;
+        this.dir = tankJoinMsg.dir;
+        this.moving = tankJoinMsg.moving;
+        this.group = tankJoinMsg.group;
+        this.id = tankJoinMsg.id;
+    }
 
     public boolean isMoving() {
         return moving;
@@ -66,14 +77,18 @@ public class Tank {
 
     public void paint(Graphics g) {
         if (!this.isAlive) return;//坦克消失不用画出
-        switch (dir){
+        Color color = g.getColor();
+        g.setColor(Color.cyan);
+        g.drawString(id.toString(), x, y - 10);
+        g.setColor(color);
+        switch (dir) {
             case LEFT:
                 BufferedImage tankL = group == Group.ALLY ? ResourceManager.MyTankL : ResourceManager.tankL;
-                g.drawImage(tankL,x,y,null);
+                g.drawImage(tankL, x, y, null);
                 break;
             case RIGHT:
                 BufferedImage tankR = group == Group.ALLY ? ResourceManager.MyTankR : ResourceManager.tankR;
-                g.drawImage(tankR,x,y,null);
+                g.drawImage(tankR, x, y, null);
                 break;
             case UP:
                 BufferedImage tankU = group == Group.ALLY ? ResourceManager.MyTankU : ResourceManager.tankU;

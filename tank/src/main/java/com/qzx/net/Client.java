@@ -2,8 +2,6 @@ package com.qzx.net;
 
 import com.qzx.frame.TankFrame;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -12,9 +10,14 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 
 public class Client {
+    public static final Client INSTANCE = new Client();
     private Channel channel = null;
+    public static final TankJoinMsg tankJoinMsg = new TankJoinMsg(TankFrame.INSTANCE.tank);//当前主战坦克消息
 
-    public void connect(){
+    private Client() {
+    }
+
+    public void connect() {
         // 事件处理的线程池
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         // 辅助启动器
@@ -48,15 +51,11 @@ public class Client {
         }
     }
 
-    public void send(String msg){
+    public void send(TankJoinMsg msg) {
         // 发送消息
-        ByteBuf byteBuf = Unpooled.copiedBuffer(msg.getBytes());
-        channel.writeAndFlush(byteBuf);
+        channel.writeAndFlush(msg);
     }
 
-    public void close(){
-        this.send("_bye_");
-    }
 
     public static void main(String[] args) {
         new Client().connect();
@@ -75,16 +74,17 @@ class InitChannelHandler extends ChannelInitializer<SocketChannel> {
     }
 }
 
-class ClientReadHandler extends ChannelInboundHandlerAdapter {
+class ClientReadHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // 通道可用的时候就写一个TankJoinMsg的消息给服务器
-        ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.tank));
+        // 通道可用的时候就写一个主战坦克的TankJoinMsg的消息给服务器
+        ctx.writeAndFlush(Client.tankJoinMsg);
     }
 
+
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println(msg);
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TankJoinMsg tankJoinMsg) throws Exception {
+        tankJoinMsg.handle();//消息处理逻辑
     }
 }

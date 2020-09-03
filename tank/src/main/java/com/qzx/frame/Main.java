@@ -1,5 +1,7 @@
 package com.qzx.frame;
 
+import com.qzx.net.Client;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,14 +11,18 @@ import java.util.concurrent.TimeUnit;
  * @version: 1.0
  */
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
-//        int initTankCount = Integer.parseInt((String)PropertyManager.get("initTankCount"));
-//        for (int i = 0; i < initTankCount; i++) {
-//            tankFrame.enemies.add(new Tank(50+i*70,150,Dir.DOWN,tankFrame,Group.ENEMY));
-//        }
-        while(true) {
-            TimeUnit.MILLISECONDS.sleep(50);
-            TankFrame.INSTANCE.repaint();
-        }
+    public static void main(String[] args) {
+        // 启动单独一个线程绘制图形界面，
+        new Thread(() -> {
+            while (true) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                TankFrame.INSTANCE.repaint();
+            }
+        }).start();
+        Client.INSTANCE.connect();
     }
 }

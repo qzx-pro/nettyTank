@@ -7,7 +7,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class Server {
@@ -62,8 +61,7 @@ class ServerReadHandler extends ChannelInboundHandlerAdapter{
         // 现在接受的msg就是TankJoinMsg类型的数据
         TankJoinMsg tankJoinMsg = (TankJoinMsg) msg;
         ServerFrame.getInstance().updateClientMsg(tankJoinMsg.toString());
-        ReferenceCountUtil.release(msg);
-        ctx.writeAndFlush(msg);
+        Server.clients.writeAndFlush(msg); // 给所有客户端发送消息
     }
 
     @Override

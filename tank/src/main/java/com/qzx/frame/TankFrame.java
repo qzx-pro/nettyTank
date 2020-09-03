@@ -5,8 +5,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 /**
  * @Auther: qzx
@@ -14,16 +14,25 @@ import java.util.List;
  * @Description: com.qzx.frame
  * @version: 1.0
  */
-public class TankFrame extends Frame{
+public class TankFrame extends Frame {
     public static final TankFrame INSTANCE = new TankFrame();
-    static final int GAME_WIDTH = 1000,GAME_HEIGHT = 800;
-    public Tank tank = new Tank(200,400,Dir.UP,this,Group.ALLY);//我方坦克
+    static final int GAME_WIDTH = 1000, GAME_HEIGHT = 800;
+    public Map<UUID, Tank> enemies = new HashMap<>(); // 敌人集合
+    Random random = new Random();
     List<Bullet> bullets = new ArrayList<>();//打出的子弹集合
-//    List<Tank> enemies = new ArrayList<>();//敌人坦克集合
+    public Tank tank = new Tank(random.nextInt(400), random.nextInt(400), Dir.UP, this, Group.ALLY);//我方坦克
     List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
 
+    public Tank getTank(UUID uuid) {
+        return enemies.get(uuid);
+    }
+
+    public void addEnemyTank(Tank t) {
+        enemies.put(t.id, t);
+    }
+
     private TankFrame() {
-        this.setLocation(500,300);//设定初始Frame的位置
+        this.setLocation(500, 300);//设定初始Frame的位置
         this.setSize(GAME_WIDTH, GAME_HEIGHT);//初始大小
         this.setResizable(false);//设置大小不可变
         this.setVisible(true);//设置可见
@@ -68,25 +77,18 @@ public class TankFrame extends Frame{
         for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
             bullet.paint(g);
-            if (!bullet.isAlive){
+            if (!bullet.isAlive) {
                 //子弹飞出边界，移除子弹
                 bullets.remove(bullet);
             }
         }
-//        //画出敌方坦克
-//        for (int i = 0; i < enemies.size(); i++) {
-//            Tank enemy = enemies.get(i);
-//            enemy.paint(g);
-//            if (!enemy.isAlive){
-//                //坦克遭到攻击，移除坦克
-//                enemies.remove(enemy);
-//            }
-//        }
+        //画出敌方坦克
+        enemies.values().stream().forEach((e) -> e.paint(g));
         //画出坦克爆炸效果
         for (int i = 0; i < explodes.size(); i++) {
             Explode explode = explodes.get(i);
             explode.paint(g);
-            if (!explode.isAlive){
+            if (!explode.isAlive) {
                 explodes.remove(explode);
             }
         }
