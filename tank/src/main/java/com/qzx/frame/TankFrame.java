@@ -15,13 +15,14 @@ import java.util.List;
  * @version: 1.0
  */
 public class TankFrame extends Frame{
+    public static final TankFrame INSTANCE = new TankFrame();
     static final int GAME_WIDTH = 1000,GAME_HEIGHT = 800;
-    Tank tank = new Tank(200,400,Dir.UP,this,Group.ALLY);//我方坦克
+    public Tank tank = new Tank(200,400,Dir.UP,this,Group.ALLY);//我方坦克
     List<Bullet> bullets = new ArrayList<>();//打出的子弹集合
 //    List<Tank> enemies = new ArrayList<>();//敌人坦克集合
     List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
 
-    public TankFrame() {
+    private TankFrame() {
         this.setLocation(500,300);//设定初始Frame的位置
         this.setSize(GAME_WIDTH, GAME_HEIGHT);//初始大小
         this.setResizable(false);//设置大小不可变

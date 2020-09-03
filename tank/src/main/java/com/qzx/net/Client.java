@@ -1,5 +1,6 @@
 package com.qzx.net;
 
+import com.qzx.frame.TankFrame;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -69,16 +70,21 @@ class InitChannelHandler extends ChannelInitializer<SocketChannel> {
         // Channel进行初始化完毕后就进行后续的数据处理操作
         ChannelPipeline pipeline = channel.pipeline();
         pipeline.addLast(new TankJoinMsgEncoder())   // 添加编码器
+                .addLast(new TankJoinMsgDecoder())   // 添加解码器
                 .addLast(new ClientReadHandler());
     }
-
 }
 
 class ClientReadHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        // 通道可用的时候就写一个TankMsg的消息给服务器
-//        ctx.writeAndFlush(new TankJoinMsg(6,8));
+        // 通道可用的时候就写一个TankJoinMsg的消息给服务器
+        ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.tank));
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println(msg);
     }
 }

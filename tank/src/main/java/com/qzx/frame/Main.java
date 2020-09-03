@@ -10,14 +10,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        TankFrame tankFrame = new TankFrame();
 //        int initTankCount = Integer.parseInt((String)PropertyManager.get("initTankCount"));
 //        for (int i = 0; i < initTankCount; i++) {
 //            tankFrame.enemies.add(new Tank(50+i*70,150,Dir.DOWN,tankFrame,Group.ENEMY));
 //        }
         while(true) {
             TimeUnit.MILLISECONDS.sleep(50);
-            tankFrame.repaint();
+            TankFrame.INSTANCE.repaint();
         }
     }
 }

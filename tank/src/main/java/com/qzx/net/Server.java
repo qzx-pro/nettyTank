@@ -33,6 +33,7 @@ public class Server {
                             // 初始化Channel后就可以获取客户端发送的数据了
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new TankJoinMsgDecoder())    // 添加解码器
+                                    .addLast(new TankJoinMsgEncoder())    // 添加编码器
                                     .addLast(new ServerReadHandler());
                         }
                     })
@@ -58,10 +59,11 @@ class ServerReadHandler extends ChannelInboundHandlerAdapter{
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 现在接受的msg就是TankMsg类型的数据
+        // 现在接受的msg就是TankJoinMsg类型的数据
         TankJoinMsg tankJoinMsg = (TankJoinMsg) msg;
         ServerFrame.getInstance().updateClientMsg(tankJoinMsg.toString());
         ReferenceCountUtil.release(msg);
+        ctx.writeAndFlush(msg);
     }
 
     @Override
