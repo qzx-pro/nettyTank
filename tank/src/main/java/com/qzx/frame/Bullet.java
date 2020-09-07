@@ -72,7 +72,7 @@ public class Bullet {
                 y += SPEED;
                 break;
         }
-        if (x<0||x>tf.GAME_WIDTH||y<0||y>tf.GAME_HEIGHT){
+        if (x < 0 || x > tf.GAME_WIDTH || y < 0 || y > tf.GAME_HEIGHT) {
             //超过边界，设置子弹消失状态
             isAlive = false;
         }
@@ -81,15 +81,15 @@ public class Bullet {
         recBullet.y = y;
     }
     //子弹与坦克发生碰撞检测
-    public void collideWith(Tank tank) {
-        if (this.group == tank.group) return;//如果是我方发射的子弹不做碰撞检测,也就是不开启队友伤害
-        if (recBullet.intersects(tank.recTank)){
-            //如果2个矩形相交就说明发生碰撞
-            this.isAlive = false;
-            tank.isAlive = false;
-            int x = tank.getX() + Tank.TANK_WIDTH/2 - Explode.WIDTH/2;//爆炸的位置x为坦克的中心位置x
-            int y = tank.getY() + Tank.TANK_HEIGHT/2 - Explode.HEIGHT/2;//爆炸的位置y为坦克的中心位置y
-            tf.explodes.add(new Explode(x,y,tf));
-        }
-    }
+//    public void collideWith(Tank tank) {
+//        if (this.group == tank.group) return;//如果是我方发射的子弹不做碰撞检测,也就是不开启队友伤害
+//        if (recBullet.intersects(tank.recTank)){
+//            //如果2个矩形相交就说明发生碰撞
+//            this.isAlive = false;
+//            tank.isAlive = false;
+//            int x = tank.getX() + Tank.TANK_WIDTH/2 - Explode.WIDTH/2;//爆炸的位置x为坦克的中心位置x
+//            int y = tank.getY() + Tank.TANK_HEIGHT/2 - Explode.HEIGHT/2;//爆炸的位置y为坦克的中心位置y
+//            tf.explodes.add(new Explode(x,y,tf));
+//        }
+//    }
 }

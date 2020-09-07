@@ -31,8 +31,8 @@ public class Server {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             // 初始化Channel后就可以获取客户端发送的数据了
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new TankJoinMsgDecoder())    // 添加解码器
-                                    .addLast(new TankJoinMsgEncoder())    // 添加编码器
+                            pipeline.addLast(new MsgDecoder())    // 添加解码器
+                                    .addLast(new MsgEncoder())    // 添加编码器
                                     .addLast(new ServerReadHandler());
                         }
                     })

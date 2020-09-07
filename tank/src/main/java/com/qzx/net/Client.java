@@ -51,7 +51,7 @@ public class Client {
         }
     }
 
-    public void send(TankJoinMsg msg) {
+    public void send(Msg msg) {
         // 发送消息
         channel.writeAndFlush(msg);
     }
@@ -68,8 +68,8 @@ class InitChannelHandler extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel channel) throws Exception {
         // Channel进行初始化完毕后就进行后续的数据处理操作
         ChannelPipeline pipeline = channel.pipeline();
-        pipeline.addLast(new TankJoinMsgEncoder())   // 添加编码器
-                .addLast(new TankJoinMsgDecoder())   // 添加解码器
+        pipeline.addLast(new MsgEncoder())   // 添加编码器
+                .addLast(new MsgDecoder())   // 添加解码器
                 .addLast(new ClientReadHandler());
     }
 }

@@ -1,5 +1,8 @@
 package com.qzx.frame;
 
+import com.qzx.net.Client;
+import com.qzx.net.TankMoveMsg;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -174,6 +177,8 @@ public class TankFrame extends Frame {
                 if (bD) {
                     tank.setDir(Dir.DOWN);
                 }
+                // 当前主战坦克开始移动的是就发消息给服务端通知其他客户端自己移动的消息
+                Client.INSTANCE.send(new TankMoveMsg(tank));
             }
         }
     }

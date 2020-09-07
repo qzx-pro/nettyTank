@@ -8,10 +8,10 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @Auther: qzx
  * @Date: 2020/9/2 - 09 - 02 - 10:12 上午
  * @Description: com.qzx.netty.test09
- * 自定义编码器,将TankJoinMsg转化为byteBuf
+ * 自定义编码器
  * @version: 1.0
  */
-public class TankJoinMsgEncoder extends MessageToByteEncoder<Msg> {
+public class MsgEncoder extends MessageToByteEncoder<Msg> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Msg msg, ByteBuf byteBuf) throws Exception {

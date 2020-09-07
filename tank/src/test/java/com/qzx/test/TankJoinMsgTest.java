@@ -3,15 +3,14 @@ package com.qzx.test;
 import com.qzx.frame.Dir;
 import com.qzx.frame.Group;
 import com.qzx.frame.Tank;
+import com.qzx.net.MsgDecoder;
+import com.qzx.net.MsgEncoder;
 import com.qzx.net.TankJoinMsg;
-import com.qzx.net.TankJoinMsgDecoder;
-import com.qzx.net.TankJoinMsgEncoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Assert;
 import org.junit.Test;
-
 
 import java.util.UUID;
 
@@ -28,7 +27,7 @@ public class TankJoinMsgTest {
         Tank tank = new Tank();
         TankJoinMsg tankJoinMsg = new TankJoinMsg(1,2, Dir.DOWN,false, Group.ALLY,tank.id);
         EmbeddedChannel channel = new EmbeddedChannel();
-        channel.pipeline().addLast(new TankJoinMsgEncoder());
+        channel.pipeline().addLast(new MsgEncoder());
         channel.writeOutbound(tankJoinMsg);
         ByteBuf byteBuf = (ByteBuf) channel.readOutbound();
         int x = byteBuf.readInt();
@@ -58,7 +57,7 @@ public class TankJoinMsgTest {
         byteBuf.writeLong(tankJoinMsg.id.getLeastSignificantBits()); // 写入uuid的低64位 8字节
 
         EmbeddedChannel channel = new EmbeddedChannel();
-        channel.pipeline().addLast(new TankJoinMsgDecoder());
+        channel.pipeline().addLast(new MsgDecoder());
         channel.writeInbound(byteBuf);
         TankJoinMsg msg = (TankJoinMsg) channel.readInbound();
         Assert.assertTrue(msg.x==tankJoinMsg.x&&msg.y==tankJoinMsg.y

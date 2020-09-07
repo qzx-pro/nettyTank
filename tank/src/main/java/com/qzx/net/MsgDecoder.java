@@ -10,9 +10,10 @@ import java.util.List;
  * @Auther: qzx
  * @Date: 2020/9/2 - 09 - 02 - 10:15 上午
  * @Description: com.qzx.netty.test09
+ * 自定义解码器
  * @version: 1.0
  */
-public class TankJoinMsgDecoder extends ByteToMessageDecoder {
+public class MsgDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         if (byteBuf.readableBytes() < 8) return;// 如果消息头没有读取完整就返回
@@ -30,15 +31,19 @@ public class TankJoinMsgDecoder extends ByteToMessageDecoder {
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes); // 从buf中读取数据,读取的数据保存在bytes中
         // 根据不同的消息类型进行不同的处理
+        Msg msg = null;
         switch (msgType) {
             case TankJoinMsg:
-                TankJoinMsg tankJoinMsg = new TankJoinMsg();
-                tankJoinMsg.parse(bytes);
-                list.add(tankJoinMsg);
+                msg = new TankJoinMsg();
+                msg.parse(bytes);
+                break;
+            case TankMoveMsg:
+                msg = new TankMoveMsg();
+                msg.parse(bytes);
                 break;
             default:
                 break;
         }
-
+        list.add(msg);
     }
 }
