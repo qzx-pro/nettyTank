@@ -7,5 +7,5 @@ package com.qzx.net;
  * @version: 1.0
  */
 public enum MsgType {
-    TankJoinMsg, TankMoveMsg, TankFireMsg, TankDieMsg;
+    TankJoinMsg, TankMoveMsg, TankStopMsg, TankDieMsg;
 }

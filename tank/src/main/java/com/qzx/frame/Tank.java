@@ -125,11 +125,6 @@ public class Tank {
                 y += SPEED;
                 break;
         }
-        if (group == Group.ENEMY && random.nextInt(100) > 95) {
-            //敌方随机发射炮弹和改变移动方向
-            this.fire();
-            this.randomDir();
-        }
         //在移动过程中需要做边界检测，不能移动到边界之外
         boundCheck();
         //更新recTank的位置

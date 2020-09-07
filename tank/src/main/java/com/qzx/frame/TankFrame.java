@@ -2,6 +2,7 @@ package com.qzx.frame;
 
 import com.qzx.net.Client;
 import com.qzx.net.TankMoveMsg;
+import com.qzx.net.TankStopMsg;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -161,10 +162,12 @@ public class TankFrame extends Frame {
         }
         //设置坦克的方向
         private void setTankDir() {
-            if (!bL&!bR&!bU&!bD){
+            if (!bL&!bR&!bU&!bD) {
+                if (tank.moving) {
+                    Client.INSTANCE.send(new TankStopMsg(tank));
+                }
                 tank.setMoving(false);//按键松开就停止
             }else {
-                tank.setMoving(true);//按下表示开始移动
                 if (bL) {
                     tank.setDir(Dir.LEFT);
                 }
@@ -178,7 +181,10 @@ public class TankFrame extends Frame {
                     tank.setDir(Dir.DOWN);
                 }
                 // 当前主战坦克开始移动的是就发消息给服务端通知其他客户端自己移动的消息
-                Client.INSTANCE.send(new TankMoveMsg(tank));
+                if (!tank.moving) {
+                    Client.INSTANCE.send(new TankMoveMsg(tank));
+                }
+                tank.setMoving(true);//按下表示开始移动
             }
         }
     }

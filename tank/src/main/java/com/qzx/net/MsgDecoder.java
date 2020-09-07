@@ -35,15 +35,17 @@ public class MsgDecoder extends ByteToMessageDecoder {
         switch (msgType) {
             case TankJoinMsg:
                 msg = new TankJoinMsg();
-                msg.parse(bytes);
                 break;
             case TankMoveMsg:
                 msg = new TankMoveMsg();
-                msg.parse(bytes);
+                break;
+            case TankStopMsg:
+                msg = new TankStopMsg();
                 break;
             default:
                 break;
         }
+        msg.parse(bytes);
         list.add(msg);
     }
 }
