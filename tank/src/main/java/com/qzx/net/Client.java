@@ -74,7 +74,7 @@ class InitChannelHandler extends ChannelInitializer<SocketChannel> {
     }
 }
 
-class ClientReadHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
+class ClientReadHandler extends SimpleChannelInboundHandler<Msg> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -84,7 +84,7 @@ class ClientReadHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TankJoinMsg tankJoinMsg) throws Exception {
-        tankJoinMsg.handle();//消息处理逻辑
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Msg msg) throws Exception {
+        msg.handle();//消息处理逻辑
     }
 }

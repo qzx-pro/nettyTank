@@ -11,11 +11,14 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * 自定义编码器,将TankJoinMsg转化为byteBuf
  * @version: 1.0
  */
-public class TankJoinMsgEncoder extends MessageToByteEncoder<TankJoinMsg> {
+public class TankJoinMsgEncoder extends MessageToByteEncoder<Msg> {
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, TankJoinMsg tankJoinMsg, ByteBuf byteBuf) throws Exception {
-        // 总共写入33个字节
-        byteBuf.writeBytes(tankJoinMsg.toBytes());
+    protected void encode(ChannelHandlerContext channelHandlerContext, Msg msg, ByteBuf byteBuf) throws Exception {
+        // 首先写入消息头，分为消息类型和消息长度
+        byteBuf.writeInt(msg.getMsgType().ordinal());//消息头
+        byte[] bytes = msg.toBytes();
+        byteBuf.writeInt(bytes.length);//消息长度
+        byteBuf.writeBytes(bytes);// 消息内容
     }
 }

@@ -58,9 +58,9 @@ class ServerReadHandler extends ChannelInboundHandlerAdapter{
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 现在接受的msg就是TankJoinMsg类型的数据
-        TankJoinMsg tankJoinMsg = (TankJoinMsg) msg;
-        ServerFrame.getInstance().updateClientMsg(tankJoinMsg.toString());
+        // 现在接受的msg就是Msg类型的数据
+        Msg _msg = (Msg) msg;
+        ServerFrame.getInstance().updateClientMsg(_msg.toString());
         Server.clients.writeAndFlush(msg); // 给所有客户端发送消息
     }
 

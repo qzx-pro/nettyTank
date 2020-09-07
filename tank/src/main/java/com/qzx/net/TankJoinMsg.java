@@ -15,9 +15,9 @@ import java.util.UUID;
  * 坦克加入消息
  * @version: 1.0
  */
-public class TankJoinMsg {
-    public int x,y; // 位置
-    public Dir dir ;//坦克的初始方向
+public class TankJoinMsg extends Msg {
+    public int x, y; // 位置
+    public Dir dir;//坦克的初始方向
     public boolean moving = false;//标识坦克是否移动,用来实现坦克静止,初始状态没有移动
     public Group group;//当前坦克的敌友标识
     public UUID id; // 坦克的唯一标识
@@ -55,15 +55,21 @@ public class TankJoinMsg {
                 '}';
     }
 
+    @Override
+    public MsgType getMsgType() {
+        return MsgType.TankJoinMsg;
+    }
+
     /*
-    消息处理函数:
-    对于每一个客户端接受到服务端发送的有新的坦克加入游戏，首先判断该消息是不是自己发的，
-    然后判断列表中是否已经存在当前接受到消息的坦克，最后再给新加入的坦克发送自己在游戏中的消息。
-    如果消息是自己发的无需做处理，只需接受其他坦克给自己发消息就行，然后把它们添加到敌方坦克列表中即可。
-    如果不是自己发的消息，需要根据该消息构建坦克并且添加到自己的敌方列表中，然后自己给敌方发消息让
-    它添加自己到它的敌方列表中.
-    如果已经将其加入到敌方坦克中就无需处理当前消息。这一点非常重要，如果没有判断双方会一直发送消息。
-     */
+        消息处理函数:
+        对于每一个客户端接受到服务端发送的有新的坦克加入游戏，首先判断该消息是不是自己发的，
+        然后判断列表中是否已经存在当前接受到消息的坦克，最后再给新加入的坦克发送自己在游戏中的消息。
+        如果消息是自己发的无需做处理，只需接受其他坦克给自己发消息就行，然后把它们添加到敌方坦克列表中即可。
+        如果不是自己发的消息，需要根据该消息构建坦克并且添加到自己的敌方列表中，然后自己给敌方发消息让
+        它添加自己到它的敌方列表中.
+        如果已经将其加入到敌方坦克中就无需处理当前消息。这一点非常重要，如果没有判断双方会一直发送消息。
+         */
+    @Override
     public void handle() {
         UUID id = TankFrame.INSTANCE.tank.id;// 自己主战坦克的id
         if (this.id.equals(id) || TankFrame.INSTANCE.getTank(this.id) != null) {
@@ -79,6 +85,7 @@ public class TankJoinMsg {
     }
 
     // 将该消息转化为字节数组
+    @Override
     public byte[] toBytes() {
         ByteArrayOutputStream baos = null;
         DataOutputStream dos = null;
@@ -112,7 +119,9 @@ public class TankJoinMsg {
         return baos.toByteArray();
     }
 
+
     // 将字节数组转化为该消息
+    @Override
     public void parse(byte[] bytes) {
         ByteArrayInputStream bais = null;
         DataInputStream dis = null;
