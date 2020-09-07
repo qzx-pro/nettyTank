@@ -1,6 +1,7 @@
 package com.qzx.frame;
 
 import com.qzx.net.Client;
+import com.qzx.net.TankDirChangeMsg;
 import com.qzx.net.TankMoveMsg;
 import com.qzx.net.TankStopMsg;
 
@@ -25,7 +26,7 @@ public class TankFrame extends Frame {
     Random random = new Random();
     List<Bullet> bullets = new ArrayList<>();//打出的子弹集合
     public Tank tank = new Tank(random.nextInt(400), random.nextInt(400), Dir.UP, this, Group.ALLY);//我方坦克
-    List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
+    public List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
 
     public Tank getTank(UUID uuid) {
         return enemies.get(uuid);
@@ -33,6 +34,15 @@ public class TankFrame extends Frame {
 
     public void addEnemyTank(Tank t) {
         enemies.put(t.id, t);
+    }
+
+    public Bullet getBullet(UUID id) {
+        for (Bullet bullet : bullets) {
+            if (bullet.id.equals(id)) {
+                return bullet;
+            }
+        }
+        return null;
     }
 
     private TankFrame() {
@@ -71,9 +81,9 @@ public class TankFrame extends Frame {
     public void paint(Graphics g) {
         Color c = g.getColor();
         g.setColor(Color.WHITE);
-        g.drawString("子弹数量:"+bullets.size(),10,60);
-//        g.drawString("敌方坦克数量:"+enemies.size(),10,80);
-        g.drawString("坦克爆炸数量:"+explodes.size(),10,100);
+        g.drawString("子弹数量:" + bullets.size(), 10, 60);
+        g.drawString("敌方坦克数量:" + enemies.size(), 10, 80);
+        g.drawString("坦克爆炸数量:" + explodes.size(), 10, 100);
         g.setColor(c);
         //画出我方坦克
         tank.paint(g);
@@ -87,7 +97,17 @@ public class TankFrame extends Frame {
             }
         }
         //画出敌方坦克
-        enemies.values().stream().forEach((e) -> e.paint(g));
+        Collection<Tank> values = enemies.values();
+        Iterator<Tank> iterator = values.iterator();
+        while (iterator.hasNext()) {
+            Tank tank = iterator.next();
+            if (!tank.isAlive) {
+                // 该坦克不用画出
+                iterator.remove();
+            } else {
+                tank.paint(g);
+            }
+        }
         //画出坦克爆炸效果
         for (int i = 0; i < explodes.size(); i++) {
             Explode explode = explodes.get(i);
@@ -96,14 +116,18 @@ public class TankFrame extends Frame {
                 explodes.remove(explode);
             }
         }
-//        //碰撞检测
-//        for (int i = 0; i < bullets.size(); i++) {
-//            Bullet bullet = bullets.get(i);
-//            for (int j = 0; j < enemies.size(); j++) {
-//                //子弹和敌方坦克发生碰撞
-//                bullet.collideWith(enemies.get(j));
-//            }
-//        }
+        //碰撞检测
+        for (int i = 0; i < bullets.size(); i++) {
+            Bullet bullet = bullets.get(i);
+            Collection<Tank> tanks = values;
+            for (Tank tank : tanks) {
+                bullet.collideWith(tank);
+            }
+        }
+    }
+
+    public void addBullet(Bullet bullet) {
+        bullets.add(bullet);
     }
 
     class MyKey extends KeyAdapter {
@@ -162,12 +186,17 @@ public class TankFrame extends Frame {
         }
         //设置坦克的方向
         private void setTankDir() {
-            if (!bL&!bR&!bU&!bD) {
-                if (tank.moving) {
-                    Client.INSTANCE.send(new TankStopMsg(tank));
-                }
+            Dir dir = tank.getDir();//old dir
+            boolean moving = tank.isMoving();// old moving state
+            if (!bL & !bR & !bU & !bD) {
+                Client.INSTANCE.send(new TankStopMsg(tank));
                 tank.setMoving(false);//按键松开就停止
-            }else {
+            } else {
+                tank.setMoving(true);//按下表示开始移动
+                if (tank.isMoving() != moving) {
+                    // 当前主战坦克开始移动的是就发消息给服务端通知其他客户端自己移动的消息
+                    Client.INSTANCE.send(new TankMoveMsg(tank));
+                }
                 if (bL) {
                     tank.setDir(Dir.LEFT);
                 }
@@ -180,11 +209,10 @@ public class TankFrame extends Frame {
                 if (bD) {
                     tank.setDir(Dir.DOWN);
                 }
-                // 当前主战坦克开始移动的是就发消息给服务端通知其他客户端自己移动的消息
-                if (!tank.moving) {
-                    Client.INSTANCE.send(new TankMoveMsg(tank));
+                if (tank.getDir() != dir) {
+                    // 方向发生改变
+                    Client.INSTANCE.send(new TankDirChangeMsg(tank));
                 }
-                tank.setMoving(true);//按下表示开始移动
             }
         }
     }

@@ -28,7 +28,9 @@ public class MsgDecoder extends ByteToMessageDecoder {
             byteBuf.resetReaderIndex();// 重置读取位置
             return;
         }
-        byte[] bytes = new byte[byteBuf.readableBytes()];
+        // 这里得写length不能写byteBuf.readableBytes()，
+        // 否则会出现java.lang.ArrayIndexOutOfBoundsException: -2097490776异常
+        byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes); // 从buf中读取数据,读取的数据保存在bytes中
         // 根据不同的消息类型进行不同的处理
         Msg msg = null;
@@ -41,6 +43,15 @@ public class MsgDecoder extends ByteToMessageDecoder {
                 break;
             case TankStopMsg:
                 msg = new TankStopMsg();
+                break;
+            case TankDirChangeMsg:
+                msg = new TankDirChangeMsg();
+                break;
+            case TankFireMsg:
+                msg = new TankFireMsg();
+                break;
+            case TankDieMsg:
+                msg = new TankDieMsg();
                 break;
             default:
                 break;

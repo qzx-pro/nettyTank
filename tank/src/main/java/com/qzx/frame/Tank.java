@@ -1,5 +1,7 @@
 package com.qzx.frame;
 
+import com.qzx.net.Client;
+import com.qzx.net.TankFireMsg;
 import com.qzx.net.TankJoinMsg;
 
 import java.awt.*;
@@ -19,7 +21,7 @@ public class Tank {
     public Group group;//当前坦克的敌友标识
     Random random = new Random();//让坦克随机发射子弹
     boolean init = true;//是否是初始状态
-//    Rectangle recTank = null;//坦克的所处位置的矩形，用来做碰撞检测
+    Rectangle recTank = null;//坦克的所处位置的矩形，用来做碰撞检测
     public UUID id = UUID.randomUUID(); // 坦克的唯一标识
 
     public Tank(TankJoinMsg tankJoinMsg) {
@@ -29,6 +31,20 @@ public class Tank {
         this.moving = tankJoinMsg.moving;
         this.group = tankJoinMsg.group;
         this.id = tankJoinMsg.id;
+        recTank = new Rectangle(x, y, TANK_WIDTH, TANK_HEIGHT);
+    }
+
+    public Tank(int x, int y, Dir dir, TankFrame tf, Group group) {
+        this.x = x;
+        this.y = y;
+        this.dir = dir;
+        this.tf = tf;
+        this.group = group;
+        recTank = new Rectangle(x, y, TANK_WIDTH, TANK_HEIGHT);
+    }
+
+    public Group getGroup() {
+        return group;
     }
 
     public boolean isMoving() {
@@ -55,13 +71,8 @@ public class Tank {
         this.y = y;
     }
 
-    public Tank(int x, int y, Dir dir, TankFrame tf, Group group) {
-        this.x = x;
-        this.y = y;
-        this.dir = dir;
-        this.tf = tf;
+    public void setGroup(Group group) {
         this.group = group;
-//        recTank = new Rectangle(x,y,TANK_WIDTH,TANK_HEIGHT);
     }
 
     public Tank() {
@@ -76,7 +87,10 @@ public class Tank {
     }
 
     public void paint(Graphics g) {
-        if (!this.isAlive) return;//坦克消失不用画出
+        //坦克消失不用画出
+        if (!this.isAlive) {
+            return;
+        }
         Color color = g.getColor();
         g.setColor(Color.cyan);
         g.drawString(id.toString(), x, y - 10);
@@ -128,8 +142,8 @@ public class Tank {
         //在移动过程中需要做边界检测，不能移动到边界之外
         boundCheck();
         //更新recTank的位置
-//        recTank.x = x;
-//        recTank.y = y;
+        recTank.x = x;
+        recTank.y = y;
     }
 
     private void boundCheck() {
@@ -160,8 +174,28 @@ public class Tank {
     }
 
     public void fire() {
-        int x = this.x + TANK_WIDTH/2-ResourceManager.bulletD.getWidth()/2;//发射子弹的初始位置x
-        int y = this.y + TANK_HEIGHT/2-ResourceManager.bulletD.getHeight()/2;//发射子弹的初始位置y
-        tf.bullets.add(new Bullet(x,y,this.dir,this.tf,this.group));
+        int x = this.x + TANK_WIDTH / 2 - ResourceManager.bulletD.getWidth() / 2;//发射子弹的初始位置x
+        int y = this.y + TANK_HEIGHT / 2 - ResourceManager.bulletD.getHeight() / 2;//发射子弹的初始位置y
+        Bullet bullet = new Bullet(x, y, this.dir, this.tf, this.group, this.id);
+        tf.bullets.add(bullet);
+        bullet.setGroup(Group.ENEMY);// 发送消息给其他用户的的当前坦克发射的子弹为敌方子弹
+        Client.INSTANCE.send(new TankFireMsg(bullet));
+    }
+
+    @Override
+    public String toString() {
+        return "Tank{" +
+                "x=" + x +
+                ", y=" + y +
+                ", dir=" + dir +
+                ", moving=" + moving +
+                ", tf=" + tf +
+                ", isAlive=" + isAlive +
+                ", group=" + group +
+                ", random=" + random +
+                ", init=" + init +
+                ", recTank=" + recTank +
+                ", id=" + id +
+                '}';
     }
 }
