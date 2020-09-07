@@ -39,7 +39,7 @@ public class TankStopMsg extends Msg {
     @Override
     public void handle() {
         // 接受到的消息如果是自己发的就不做处理
-        if (this.id.equals(TankFrame.INSTANCE.tank.id)) {
+        if (this.id.equals(TankFrame.INSTANCE.getMyTank().id)) {
             return;
         }
         // 不是自己发的就让对应的敌方坦克按照消息给定的位置停止移动

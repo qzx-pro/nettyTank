@@ -132,6 +132,10 @@ public class Bullet {
         }
     }
 
+    public void die() {
+        this.isAlive = false;
+    }
+
     @Override
     public String toString() {
         return "Bullet{" +

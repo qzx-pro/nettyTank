@@ -71,7 +71,7 @@ public class TankJoinMsg extends Msg {
          */
     @Override
     public void handle() {
-        UUID id = TankFrame.INSTANCE.tank.id;// 自己主战坦克的id
+        UUID id = TankFrame.INSTANCE.getMyTank().id;// 自己主战坦克的id
         if (this.id.equals(id) || TankFrame.INSTANCE.getTank(this.id) != null) {
             // 发送消息的就是自己或者发送消息的坦克已经添加到自己的敌方列表中不做处理
             return;

@@ -28,6 +28,15 @@ public class TankFrame extends Frame {
     public Tank tank = new Tank(random.nextInt(400), random.nextInt(400), Dir.UP, this, Group.ALLY);//我方坦克
     public List<Explode> explodes = new ArrayList<>();//坦克爆炸集合
 
+
+    public void addExplode(Explode explode) {
+        explodes.add(explode);
+    }
+
+    public Tank getMyTank() {
+        return tank;
+    }
+
     public Tank getTank(UUID uuid) {
         return enemies.get(uuid);
     }

@@ -32,30 +32,8 @@ public class MsgDecoder extends ByteToMessageDecoder {
         // 否则会出现java.lang.ArrayIndexOutOfBoundsException: -2097490776异常
         byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes); // 从buf中读取数据,读取的数据保存在bytes中
-        // 根据不同的消息类型进行不同的处理
-        Msg msg = null;
-        switch (msgType) {
-            case TankJoinMsg:
-                msg = new TankJoinMsg();
-                break;
-            case TankMoveMsg:
-                msg = new TankMoveMsg();
-                break;
-            case TankStopMsg:
-                msg = new TankStopMsg();
-                break;
-            case TankDirChangeMsg:
-                msg = new TankDirChangeMsg();
-                break;
-            case TankFireMsg:
-                msg = new TankFireMsg();
-                break;
-            case TankDieMsg:
-                msg = new TankDieMsg();
-                break;
-            default:
-                break;
-        }
+        // 根据消息的类型获取不同的消息实例
+        Msg msg = (Msg) Class.forName("com.qzx.net." + msgType.toString()).getDeclaredConstructor().newInstance();
         msg.parse(bytes);
         list.add(msg);
     }

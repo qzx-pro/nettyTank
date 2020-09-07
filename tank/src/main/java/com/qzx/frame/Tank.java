@@ -182,6 +182,10 @@ public class Tank {
         Client.INSTANCE.send(new TankFireMsg(bullet));
     }
 
+    public void die() {
+        this.isAlive = false;
+    }
+
     @Override
     public String toString() {
         return "Tank{" +

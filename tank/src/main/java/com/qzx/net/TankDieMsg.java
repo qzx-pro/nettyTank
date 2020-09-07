@@ -15,7 +15,7 @@ import java.util.UUID;
  * @version: 1.0
  */
 public class TankDieMsg extends Msg {
-    public UUID bid;// 击杀坦克的子弹id
+    public UUID bid;// 击杀坦克的子弹id，同时也是击杀坦克的id
     public UUID tid;// 被击杀的坦克id
     private int x, y;// 坦克爆炸的位置
 
@@ -43,15 +43,15 @@ public class TankDieMsg extends Msg {
         // 将当前被击杀的坦克在所有其他客户端中进行处理
         Tank enemy = TankFrame.INSTANCE.getTank(this.tid);
         Bullet bullet = TankFrame.INSTANCE.getBullet(this.bid);
-        bullet.isAlive = false; // 子弹消失
+        bullet.die(); // 子弹消失
         Explode explode = new Explode(x, y, TankFrame.INSTANCE);
-        TankFrame.INSTANCE.explodes.add(explode);
+        TankFrame.INSTANCE.addExplode(explode); // 添加爆炸
         if (enemy != null) {
             // 该被杀的坦克在本客户端中是敌人,移除该坦克
-            enemy.isAlive = false;
+            enemy.die();
         } else {
             // 说明是本客户端主战坦克被击杀
-            TankFrame.INSTANCE.tank.isAlive = false;
+            TankFrame.INSTANCE.getMyTank().die();
         }
     }
 
