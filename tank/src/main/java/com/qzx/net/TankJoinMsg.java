@@ -5,6 +5,7 @@ import com.qzx.frame.Group;
 import com.qzx.frame.Tank;
 import com.qzx.frame.TankFrame;
 
+import java.io.*;
 import java.util.UUID;
 
 /**
@@ -75,5 +76,73 @@ public class TankJoinMsg {
         TankFrame.INSTANCE.addEnemyTank(tank);// 添加敌方坦克（相对于当前客户端）
         // 将当前客户端的主战坦克发送给敌方
         Client.INSTANCE.send(Client.tankJoinMsg);
+    }
+
+    // 将该消息转化为字节数组
+    public byte[] toBytes() {
+        ByteArrayOutputStream baos = null;
+        DataOutputStream dos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+            dos = new DataOutputStream(baos);
+
+            dos.writeInt(x);// 4个字节
+            dos.writeInt(y);// 4个字节
+            dos.writeInt(dir.ordinal());// 写入当前坦克方向在Dir类中的枚举下标,4个字节
+            dos.writeBoolean(moving);// 1个字节
+            dos.writeInt(group.ordinal());// 4个字节
+            dos.writeLong(id.getMostSignificantBits()); // 写入uuid的高64位 8字节
+            dos.writeLong(id.getLeastSignificantBits()); // 写入uuid的低64位 8字节
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                assert dos != null;
+                dos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return baos.toByteArray();
+    }
+
+    // 将字节数组转化为该消息
+    public void parse(byte[] bytes) {
+        ByteArrayInputStream bais = null;
+        DataInputStream dis = null;
+        try {
+            bais = new ByteArrayInputStream(bytes);
+            dis = new DataInputStream(bais);
+            this.x = dis.readInt();
+            this.y = dis.readInt();
+            int dirOrdinal = dis.readInt();
+            this.dir = Dir.values()[dirOrdinal];
+            this.moving = dis.readBoolean();
+            int groupOrdinal = dis.readInt();
+            this.group = Group.values()[groupOrdinal];
+            long msb = dis.readLong();
+            long lsb = dis.readLong();
+            this.id = new UUID(msb, lsb);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                assert dis != null;
+                dis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                bais.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

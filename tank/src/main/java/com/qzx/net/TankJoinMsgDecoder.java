@@ -1,14 +1,10 @@
 package com.qzx.net;
 
-import com.qzx.frame.Dir;
-import com.qzx.frame.Group;
-import com.qzx.frame.Tank;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Auther: qzx
@@ -19,19 +15,11 @@ import java.util.UUID;
 public class TankJoinMsgDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if(byteBuf.readableBytes()<33) return;// 解决tcp拆包、粘包问题
-        Tank tank = new Tank();
-
-        tank.x = byteBuf.readInt();// 先写的x就先读x
-        tank.y = byteBuf.readInt();
-        int dirOrdinal = byteBuf.readInt();
-        tank.dir = Dir.values()[dirOrdinal];
-        tank.moving = byteBuf.readBoolean();
-        int groupOrdinal = byteBuf.readInt();
-        tank.group = Group.values()[groupOrdinal];
-        long msb = byteBuf.readLong();
-        long lsb = byteBuf.readLong();
-        tank.id = new UUID(msb,lsb);
-        list.add(new TankJoinMsg(tank));
+        if (byteBuf.readableBytes() < 33) return;// 解决tcp拆包、粘包问题
+        TankJoinMsg tankJoinMsg = new TankJoinMsg();
+        byte[] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes); // 从buf中读取数据,读取的数据保存在bytes中
+        tankJoinMsg.parse(bytes);
+        list.add(tankJoinMsg);
     }
 }
